@@ -11,47 +11,43 @@ bool isEmpty(const Queue* q) {
 }
 
 bool isFull(const Queue* q) {
-    return q->rear == q->data + MAX - 1;
+    if (isEmpty(q)) return false;
+    
+    // PERBAIKAN DI SINI: Wajib pakai const int* karena q adalah const
+    const int* next_rear = q->data + ((q->rear - q->data + 1) % MAX);
+    
+    return next_rear == q->front;
 }
 
 void enqueue(Queue* q, int value) {
-    if (isFull(q)) {
-        throw std::runtime_error("Queue overflow");
-    }
+    if (isFull(q)) throw std::overflow_error("Queue is full");
     
     if (isEmpty(q)) {
         q->front = q->data;
         q->rear = q->data;
     } else {
-        q->rear++;
+        q->rear = q->data + ((q->rear - q->data + 1) % MAX);
     }
-    
     *(q->rear) = value;
 }
 
 void dequeue(Queue* q) {
-    if (isEmpty(q)) {
-        throw std::runtime_error("Queue underflow");
-    }
+    if (isEmpty(q)) throw std::underflow_error("Queue is empty");
     
     if (q->front == q->rear) {
         q->front = nullptr;
         q->rear = nullptr;
     } else {
-        q->front++;
+        q->front = q->data + ((q->front - q->data + 1) % MAX);
     }
 }
 
 int front(const Queue* q) {
-    if (isEmpty(q)) {
-        throw std::runtime_error("Queue empty");
-    }
+    if (isEmpty(q)) throw std::underflow_error("Queue is empty");
     return *(q->front);
 }
 
 int back(const Queue* q) {
-    if (isEmpty(q)) {
-        throw std::runtime_error("Queue empty");
-    }
+    if (isEmpty(q)) throw std::underflow_error("Queue is empty");
     return *(q->rear);
 }
